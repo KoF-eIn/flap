@@ -11,6 +11,12 @@ public class Game : MonoBehaviour
 
     public int Score => _score;
 
+    private void Start()
+    {
+        Time.timeScale = 0;
+        _startScreen.Open();
+    }
+
     private void OnEnable()
     {
         _startScreen.PlayButtonClicked += OnPlayButtonClick;
@@ -21,12 +27,6 @@ public class Game : MonoBehaviour
     {
         _startScreen.PlayButtonClicked -= OnPlayButtonClick;
         _bird.Died -= OnBirdDied;
-    }
-
-    private void Start()
-    {
-        Time.timeScale = 0;
-        _startScreen.Open();
     }
 
     private void OnBirdDied()

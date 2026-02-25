@@ -11,6 +11,7 @@ public class ObjectPool<T> where T : MonoBehaviour
     {
         _prefab = prefab;
         _parent = parent;
+
         for (int i = 0; i < initialSize; i++)
         {
             T obj = CreateNew();
