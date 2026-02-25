@@ -1,54 +1,54 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-public class Bullet : PoolableObject
+public class Bullet : MonoBehaviour, IInteractable
 {
-    [SerializeField] private float _speed = 15f;
+    [SerializeField] private float _speed = 10f;
     [SerializeField] private float _lifeTime = 3f;
 
     public Owner Owner { get; private set; }
-    private Rigidbody2D _rb;
-    private float _spawnTime;
 
-    private void Awake()
+    private Rigidbody2D _rb;
+    private BulletSpawner _spawner;
+
+    public void Init(BulletSpawner spawner)
     {
-        _rb = GetComponent<Rigidbody2D>();
+        _spawner = spawner;
     }
 
     public void Initialize(Vector2 position, Vector2 direction, Owner owner)
     {
         transform.position = position;
+        if (_rb == null)
+        {
+            _rb = GetComponent<Rigidbody2D>();
+            if (_rb == null)
+            {
+                Debug.LogError("Rigidbody2D is missing on bullet! Please add it to the prefab.");
+                return;
+            }
+        }
         _rb.velocity = direction.normalized * _speed;
         Owner = owner;
-        _spawnTime = Time.time;
-    }
-
-    public override void OnSpawn()
-    {
-        base.OnSpawn();
         Invoke(nameof(ReturnToPool), _lifeTime);
     }
 
-    public override void OnDespawn()
-    {
-        base.OnDespawn();
-        CancelInvoke();
-    }
-
-    private void ReturnToPool()
-    {
-        BulletSpawner.Instance.ReturnBullet(this);
-    }
+    private void ReturnToPool() => _spawner.Return(this);
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Boundary"))
+        {
+            ReturnToPool();
+            return;
+        }
+
         if (Owner == Owner.Player && other.TryGetComponent<Enemy>(out var enemy))
         {
             enemy.Die();
             ReturnToPool();
         }
-
-        if (other.CompareTag("Boundary"))
+        else if (Owner == Owner.Enemy && other.TryGetComponent<Bird>(out var bird))
         {
             ReturnToPool();
         }
