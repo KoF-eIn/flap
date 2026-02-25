@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 2926619291773066403}
   - component: {fileID: 6844396561080138103}
   m_Layer: 0
-  m_Name: Player
+  m_Name: Player (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -168,10 +168,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _tapForce: 8
   _speed: 0
-  _rotationSpeed: 5
-  _maxRotationZ: 30
-  _minRotationZ: -30
-  _rigidbody2D: {fileID: 1553865097189580895}
 --- !u!114 &214636069625227935
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -215,6 +211,8 @@ MonoBehaviour:
   _mover: {fileID: 7957303826626502177}
   _scoreCounter: {fileID: 214636069625227935}
   _handler: {fileID: 6844396561080138103}
+  _shoot: {fileID: 2531713305624685893}
+  _inputReader: {fileID: 0}
 --- !u!114 &6844396561080138103
 MonoBehaviour:
   m_ObjectHideFlags: 0

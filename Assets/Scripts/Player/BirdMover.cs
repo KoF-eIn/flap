@@ -11,9 +11,6 @@ public class BirdMover : MonoBehaviour
     private void Awake()
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
-
-        if (_rigidbody2D == null)
-            Debug.LogError("Rigidbody2D not found on Bird!");
     }
 
     private void Start()
@@ -25,7 +22,6 @@ public class BirdMover : MonoBehaviour
     public void Jump()
     {
         if (_rigidbody2D == null) return;
-
         _rigidbody2D.velocity = new Vector2(_speed, _tapForce);
     }
 

@@ -13,14 +13,24 @@ public class Bird : MonoBehaviour
     [SerializeField] private BirdMover _mover;
     [SerializeField] private ScoreCounter _scoreCounter;
     [SerializeField] private BirdCollisionHandler _handler;
+    [SerializeField] private BirdShoot _shoot;          
+    [SerializeField] private InputReader _inputReader;  
 
-    private void OnEnable() => _handler.CollisionDetected += ProcessCollision;
-    private void OnDisable() => _handler.CollisionDetected -= ProcessCollision;
-
-    private void Update()
+    private void OnEnable()
     {
-        if (IsDead) return;
-        if (Input.GetButtonDown("Jump") || Input.GetMouseButtonDown(0))
+        _handler.CollisionDetected += ProcessCollision;
+        _inputReader.JumpPressed += OnJumpPressed;   
+    }
+
+    private void OnDisable()
+    {
+        _handler.CollisionDetected -= ProcessCollision;
+        _inputReader.JumpPressed -= OnJumpPressed;
+    }
+
+    private void OnJumpPressed()
+    {
+        if (!IsDead)
             _mover.Jump();
     }
 
@@ -29,6 +39,7 @@ public class Bird : MonoBehaviour
         if (interactable is Bullet bullet && bullet.Owner == Owner.Enemy)
         {
             IsDead = true;
+            _shoot.Disable();  
             Died?.Invoke();
         }
     }
@@ -38,5 +49,6 @@ public class Bird : MonoBehaviour
         IsDead = false;
         _scoreCounter.Reset();
         _mover.Reset();
+        _shoot.Enable();
     }
 }
