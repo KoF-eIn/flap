@@ -46,7 +46,6 @@ public class Bullet : MonoBehaviour, IInteractable
 
             if (_rb == null)
             {
-                Debug.LogError("Rigidbody2D is missing on bullet! Please add it to the prefab.");
                 return;
             }
         }
@@ -57,5 +56,13 @@ public class Bullet : MonoBehaviour, IInteractable
         Invoke(nameof(ReturnToPool), _lifeTime);
     }
 
-    private void ReturnToPool() => _spawner.Return(this);
+    private void ReturnToPool()
+    {
+        if (_spawner == null)
+        {
+            return;
+        }
+
+        _spawner.Despawn(this); 
+    }
 }

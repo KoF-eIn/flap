@@ -8,13 +8,16 @@ using UnityEngine;
 public class Bird : MonoBehaviour
 {
     public event Action Died;
-    public bool IsDead { get; private set; }
 
     [SerializeField] private BirdMover _mover;
     [SerializeField] private ScoreCounter _scoreCounter;
     [SerializeField] private BirdCollisionHandler _handler;
     [SerializeField] private BirdShoot _shoot;
     [SerializeField] private InputReader _inputReader;
+
+    private bool _isDead;
+
+    public bool IsDead => _isDead;
 
     private void OnEnable()
     {
@@ -32,13 +35,13 @@ public class Bird : MonoBehaviour
 
     private void OnJumpPressed()
     {
-        if (!IsDead)
+        if (!_isDead)
             _mover.Jump();
     }
 
     private void OnShootPressed()
     {
-        if (!IsDead)
+        if (!_isDead)
             _shoot.Shoot();
     }
 
@@ -46,7 +49,7 @@ public class Bird : MonoBehaviour
     {
         if (interactable is Bullet bullet && bullet.Owner == Owner.Enemy)
         {
-            IsDead = true;
+            _isDead = true;
             _shoot.Disable();
             Died?.Invoke();
         }
@@ -54,7 +57,7 @@ public class Bird : MonoBehaviour
 
     public void Reset()
     {
-        IsDead = false;
+        _isDead = false;
         _scoreCounter.Reset();
         _mover.Reset();
         _shoot.Enable();

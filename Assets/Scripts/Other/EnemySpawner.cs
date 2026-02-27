@@ -1,39 +1,66 @@
 using UnityEngine;
+using System.Collections;
 
-public class EnemySpawner : MonoBehaviour
+public class EnemySpawner : Spawner<Enemy>
 {
-    [SerializeField] private Enemy _prefab;
-    [SerializeField] private Transform _container;
     [SerializeField] private float _spawnInterval = 2f;
     [SerializeField] private float _spawnX = 12f;
     [SerializeField] private float _minY = -4f;
     [SerializeField] private float _maxY = 4f;
-    [SerializeField] private int _initialPoolSize = 5;
 
-    [SerializeField] private Game _game;
-    [SerializeField] private BulletSpawner _bulletSpawner;
+    private Coroutine _spawnCoroutine;
+    private Game _game;
+    private BulletSpawner _bulletSpawner;
 
-    private ObjectPool<Enemy> _pool;
-
-    private void Awake()
+    public void Initialize(Game game, BulletSpawner bulletSpawner)
     {
-        _pool = new ObjectPool<Enemy>(_prefab, _container, _initialPoolSize);
+        _game = game;
+        _bulletSpawner = bulletSpawner;
     }
 
     private void Start()
     {
-        InvokeRepeating(nameof(Spawn), 1f, _spawnInterval);
+        StartSpawning();
     }
 
-    private void Spawn()
+    private void StartSpawning()
+    {
+        if (_spawnCoroutine != null)
+            StopCoroutine(_spawnCoroutine);
+
+        _spawnCoroutine = StartCoroutine(SpawnRoutine());
+    }
+
+    private IEnumerator SpawnRoutine()
+    {
+        while (enabled)
+        {
+            yield return new WaitForSeconds(_spawnInterval);
+            SpawnEnemy();
+        }
+    }
+
+    private void SpawnEnemy()
     {
         float y = Random.Range(_minY, _maxY);
         Vector2 position = new Vector2(_spawnX, y);
-        Enemy enemy = _pool.Get(position, Quaternion.identity);
+        Enemy enemy = Spawn(position, Quaternion.identity);
         enemy.Init(_game, _bulletSpawner, this);
     }
 
-    public void Return(Enemy enemy) => _pool.Return(enemy);
+    public void StopSpawning()
+    {
+        if (_spawnCoroutine != null)
+        {
+            StopCoroutine(_spawnCoroutine);
+            _spawnCoroutine = null;
+        }
+    }
 
-    public void Reset() => _pool.Reset();
+    public override void ResetPool()
+    {
+        StopSpawning();
+        base.ResetPool();
+        StartSpawning();
+    }
 }

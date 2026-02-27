@@ -12,7 +12,10 @@ public class Enemy : MonoBehaviour, IInteractable
     private Game _game;
     private EnemySpawner _enemySpawner;
 
-    private void Awake() => _rb = GetComponent<Rigidbody2D>();
+    private void Awake()
+    {
+        _rb = GetComponent<Rigidbody2D>();
+    }
 
     private void OnEnable()
     {
@@ -20,14 +23,9 @@ public class Enemy : MonoBehaviour, IInteractable
         ScheduleNextShot();
     }
 
-    private void OnDisable() => CancelInvoke();
-
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnDisable()
     {
-        if (other.TryGetComponent<Boundary>(out _))
-        {
-            _enemySpawner.Return(this);
-        }
+        CancelInvoke();
     }
 
     public void Init(Game game, BulletSpawner bulletSpawner, EnemySpawner enemySpawner)
@@ -55,6 +53,14 @@ public class Enemy : MonoBehaviour, IInteractable
     public void Die()
     {
         _game.AddScore(1);
-        _enemySpawner.Return(this);
+        _enemySpawner.Despawn(this);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.TryGetComponent<Boundary>(out _))
+        {
+            _enemySpawner.Despawn(this);
+        }
     }
 }

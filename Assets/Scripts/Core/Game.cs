@@ -13,6 +13,7 @@ public class Game : MonoBehaviour
 
     private void Start()
     {
+        _enemySpawner.Initialize(this, _bulletSpawner);
         Time.timeScale = 0;
         _startScreen.Open();
     }
@@ -32,6 +33,7 @@ public class Game : MonoBehaviour
     private void OnBirdDied()
     {
         Time.timeScale = 0f;
+        _enemySpawner.StopSpawning();
     }
 
     private void OnPlayButtonClick()
@@ -44,8 +46,8 @@ public class Game : MonoBehaviour
     {
         Time.timeScale = 1;
         _bird.Reset();
-        _enemySpawner.Reset();
-        _bulletSpawner.Reset();
+        _enemySpawner.ResetPool();
+        _bulletSpawner.ResetPool();
     }
 
     public void AddScore(int amount)

@@ -19,6 +19,13 @@ public class BirdShoot : MonoBehaviour
         _lastShootTime = Time.time;
     }
 
-    public void Disable() => _isActive = false;
-    public void Enable() => _isActive = true;
+    public void Disable()
+    {
+        _isActive = false;
+    }
+
+    public void Enable()
+    {
+        _isActive = true;
+    }
 }
